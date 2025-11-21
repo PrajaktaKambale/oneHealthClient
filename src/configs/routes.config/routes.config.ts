@@ -11,6 +11,36 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/Home')),
         authority: [],
     },
+    {
+        key: 'clinic',
+        path: '/clinic-registration',
+        component: lazy(() => import('@/views/clinic/clinicRegistration')),
+        authority: [],
+    },
+    {
+        key: 'doctor',
+        path: '/doctor-registration',
+        component: lazy(() => import('@/views/clinic/doctorRegistration')),
+        authority: [],
+    },
+    {
+        key: 'patient',
+        path: '/patient-registration',
+        component: lazy(() => import('@/views/clinic/patient')),
+        authority: [],
+    },
+    {
+        key: 'staff',
+        path: '/staff-registration',
+        component: lazy(() => import('@/views/clinic/staff')),
+        authority: [],
+    },
+    {
+        key: 'consultation',
+        path: '/doctor-consultation',
+        component: lazy(() => import('@/views/clinic/doctorConsultation')),
+        authority: [],
+    },
     /** Example purpose only, please remove */
     {
         key: 'singleMenuItem',
@@ -53,3 +83,4 @@ export const protectedRoutes = [
         authority: [],
     },
 ]
+ 
