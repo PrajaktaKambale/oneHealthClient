@@ -45,9 +45,13 @@ function useAuth() {
                             id: user.id,
                             username: user.username,
                             emailId: user.emailId,
-                            fullName: user.username, // Use username as fullName since it's not in response
+                            fullName: user.fullName,
+                            tenantId: user.tenantId,
+                            clinicId: user.clinicId,
                             roles: user.roles,
                             authority: authority,
+                            tenant: user.tenant,
+                            clinics: user.clinics,
                             avatar: '', // Default empty avatar
                         }),
                     )
@@ -85,9 +89,13 @@ function useAuth() {
                             id: user.id,
                             username: user.username,
                             emailId: user.emailId,
-                            fullName: user.username, // Use username as fullName since it's not in response
+                            fullName: user.fullName,
+                            tenantId: user.tenantId,
+                            clinicId: user.clinicId,
                             roles: user.roles,
                             authority: authority,
+                            tenant: user.tenant,
+                            clinics: user.clinics,
                             avatar: '',
                         }),
                     )
@@ -120,8 +128,12 @@ function useAuth() {
                 username: '',
                 emailId: '',
                 fullName: '',
+                tenantId: '',
+                clinicId: '',
                 roles: [],
                 authority: [],
+                tenant: undefined,
+                clinics: [],
             }),
         )
         navigate(appConfig.unAuthenticatedEntryPath)
