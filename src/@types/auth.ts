@@ -10,10 +10,23 @@ export type SignInResponse = {
             id: string
             username: string
             emailId: string
+            fullName: string
+            tenantId: string
+            clinicId: string
             roles: Array<{
                 roleId: string
                 roleName: string
                 roleCategory: string | null
+            }>
+            tenant: {
+                id: string
+                name: string
+                slug: string
+            }
+            clinics: Array<{
+                id: string
+                name: string
+                clinicType: string
             }>
         }
         accessToken: string
