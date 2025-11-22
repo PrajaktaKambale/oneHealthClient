@@ -140,8 +140,21 @@ function useAuth() {
     }
 
     const signOut = async () => {
-        await apiSignOut()
-        handleSignOut()
+        try {
+            // Call backend logout API with token
+            if (accessToken) {
+                await apiSignOut({
+                    allDevices: false,
+                    token: accessToken
+                })
+            }
+        } catch (error) {
+            // Continue with logout even if API call fails
+            console.error('Logout API error:', error)
+        } finally {
+            // Always clear local state regardless of API call result
+            handleSignOut()
+        }
     }
 
     return {

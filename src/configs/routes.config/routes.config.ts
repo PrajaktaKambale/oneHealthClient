@@ -41,6 +41,24 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/clinic/doctorConsultation')),
         authority: [],
     },
+    {
+        key: 'visits',
+        path: '/clinic/visits',
+        component: lazy(() => import('@/views/clinic/visitList/visitList')),
+        authority: [],
+    },
+    {
+        key: 'visit-create',
+        path: '/clinic/visit/create',
+        component: lazy(() => import('@/views/clinic/visitCreation/visitCreation')),
+        authority: [],
+    },
+    {
+        key: 'visit-diagnosis',
+        path: '/clinic/visit/:visitId/diagnosis',
+        component: lazy(() => import('@/views/clinic/diagnosisForm/diagnosisForm')),
+        authority: [],
+    },
     /** Example purpose only, please remove */
     {
         key: 'singleMenuItem',
