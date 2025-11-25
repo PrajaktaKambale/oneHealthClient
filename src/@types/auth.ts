@@ -55,3 +55,8 @@ export type ForgotPassword = {
 export type ResetPassword = {
     password: string
 }
+
+export type LogoutPayload = {
+    allDevices: boolean
+    token: string
+}

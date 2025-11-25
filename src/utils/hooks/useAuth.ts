@@ -32,6 +32,13 @@ function useAuth() {
     (state) => state.auth.session
   );
 
+  // Debug authentication state
+  console.log('🔐 useAuth: Current auth state:', {
+    accessToken: accessToken ? `${accessToken.substring(0, 20)}...` : null,
+    signedIn,
+    authenticated: Boolean(accessToken && signedIn)
+  });
+
   const fetchRoleMenus = async (roleId: string) => {
     try {
       const resp = await apiFetchMenusByRole(roleId);
@@ -41,7 +48,6 @@ function useAuth() {
         );
         console.log("mapp", mappedMenus);
         dispatch(setNavigationConfig(mappedMenus));
-        console.log("user",user)
       }
     } catch (err) {
       console.error("Failed to fetch menus:", err);
@@ -99,104 +105,123 @@ function useAuth() {
   //     }
   //   };
 
-    const signIn = async (
-        values: SignInCredential,
-    ): Promise<
-        | {
-              status: Status
-              message: string
-          }
-        | undefined
-    > => {
-        try {
-            const resp = await apiSignIn(values)
-            if (resp.data && resp.data.success) {
-                const { accessToken, refreshToken, expiresIn, user } = resp.data.data
-                dispatch(signInSuccess({ accessToken, refreshToken, expiresIn }))
-                if (user) {
-                    // Map roles to authority for backward compatibility
-                    const authority = user.roles?.map(role => role.roleName) || []
-                    dispatch(
-                        setUser({
-                            id: user.id,
-                            username: user.username,
-                            emailId: user.emailId,
-                            fullName: user.fullName,
-                            tenantId: user.tenantId,
-                            clinicId: user.clinicId,
-                            roles: user.roles,
-                            authority: authority,
-                            tenant: user.tenant,
-                            clinics: user.clinics,
-                            avatar: '', // Default empty avatar
-                        }),
-                    )
+  
+const signIn = async (
+    values: SignInCredential,
+): Promise<
+    | {
+          status: Status
+          message: string
+      }
+    | undefined
+> => {
+    try {
+        console.log('🔄 SignIn: Starting authentication...')
+        const resp = await apiSignIn(values)
+        console.log('📡 SignIn: API response received:', resp)
+        console.log('📡 SignIn: resp.data structure:', resp.data)
+        console.log('📡 SignIn: resp.data.data structure:', resp.data?.data)
+        
+        if (resp && resp.success && resp.data) {
+            const signInData = resp.data  // This is the SignInResponse
+            // The API response structure is: resp.data.data contains { user, accessToken, refreshToken, expiresIn }
+            const { accessToken, refreshToken, expiresIn, user } = signInData.data
+            console.log('✅ SignIn: Authentication successful, dispatching Redux actions...')
+            
+            dispatch(signInSuccess({ accessToken, refreshToken, expiresIn }))
+            
+            if (user) {
+                // Map roles to authority for backward compatibility
+                const authority = user.roles?.map((role: any) => role.roleName) || []
+                const userPayload = {
+                    id: user.id,
+                    username: user.username,
+                    emailId: user.emailId,
+                    fullName: user.fullName,
+                    tenantId: user.tenantId,
+                    clinicId: user.clinicId,
+                    roles: user.roles,
+                    authority: authority,
+                    tenant: user.tenant,
+                    clinics: user.clinics,
+                    avatar: '', // Default empty avatar
                 }
-                const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl
-                        ? redirectUrl
-                        : appConfig.authenticatedEntryPath,
-                )
-                return {
-                    status: 'success',
-                    message: '',
-                }
+                console.log('👤 SignIn: Setting user data:', userPayload)
+                dispatch(setUser(userPayload))
             }
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-        } catch (errors: any) {
+            
+            const redirectUrl = query.get(REDIRECT_URL_KEY)
+            const targetPath = redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
+            console.log('🚀 SignIn: Navigating to:', targetPath)
+            
+            navigate(targetPath)
+            
+            console.log('✅ SignIn: Process completed successfully')
+            return {
+                status: 'success',
+                message: '',
+            }
+        } else {
+            console.log('❌ SignIn: API response indicates failure:', resp)
             return {
                 status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
+                message: resp?.message || 'Authentication failed',
             }
         }
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    } catch (errors: any) {
+        console.error('💥 SignIn: Error occurred:', errors)
+        return {
+            status: 'failed',
+            message: errors?.message || errors.toString(),
+        }
     }
+};
 
-    const signUp = async (values: SignUpCredential) => {
-        try {
-            const resp = await apiSignUp(values)
-            if (resp.data && resp.data.success) {
-                const { accessToken, refreshToken, expiresIn, user } = resp.data.data
-                dispatch(signInSuccess({ accessToken, refreshToken, expiresIn }))
-                if (user) {
-                    const authority = user.roles?.map(role => role.roleName) || []
-                    dispatch(
-                        setUser({
-                            id: user.id,
-                            username: user.username,
-                            emailId: user.emailId,
-                            fullName: user.fullName,
-                            tenantId: user.tenantId,
-                            clinicId: user.clinicId,
-                            roles: user.roles,
-                            authority: authority,
-                            tenant: user.tenant,
-                            clinics: user.clinics,
-                            avatar: '',
-                        }),
-                    )
-                }
-                const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl
-                        ? redirectUrl
-                        : appConfig.authenticatedEntryPath,
+const signUp = async (values: SignUpCredential) => {
+    try {
+        const resp = await apiSignUp(values)
+        if (resp && resp.success && resp.data) {
+            const signUpData = resp.data  // This is the SignUpResponse
+            const { accessToken, refreshToken, expiresIn, user } = signUpData.data
+            dispatch(signInSuccess({ accessToken, refreshToken, expiresIn }))
+            if (user) {
+                const authority = user.roles?.map(role => role.roleName) || []
+                dispatch(
+                    setUser({
+                        id: user.id,
+                        username: user.username,
+                        emailId: user.emailId,
+                        fullName: user.fullName,
+                        tenantId: user.tenantId,
+                        clinicId: user.clinicId,
+                        roles: user.roles,
+                        authority: authority,
+                        tenant: user.tenant,
+                        clinics: user.clinics,
+                        avatar: '',
+                    }),
                 )
-                return {
-                    status: 'success',
-                    message: '',
-                }
             }
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-        } catch (errors: any) {
+            const redirectUrl = query.get(REDIRECT_URL_KEY)
+            navigate(
+                redirectUrl
+                    ? redirectUrl
+                    : appConfig.authenticatedEntryPath,
+            )
             return {
-                status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
+                status: 'success',
+                message: '',
             }
         }
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    } catch (errors: any) {
+        return {
+            status: 'failed',
+            message: errors?.response?.data?.message || errors.toString(),
+        }
     }
-  };
-
+};
     const handleSignOut = () => {
         dispatch(signOutSuccess())
         dispatch(
@@ -216,13 +241,26 @@ function useAuth() {
         navigate(appConfig.unAuthenticatedEntryPath)
     }
 
-  const signOut = async () => {
-    await apiSignOut();
-    handleSignOut();
-  };
+    const signOut = async () => {
+        try {
+            // Call backend logout API with token
+            if (accessToken) {
+                await apiSignOut({
+                    allDevices: false,
+                    token: accessToken
+                })
+            }
+        } catch (error) {
+            // Continue with logout even if API call fails
+            console.error('Logout API error:', error)
+        } finally {
+            // Always clear local state regardless of API call result
+            handleSignOut()
+        }
+    }
 
   return {
-    authenticated: accessToken && signedIn,
+    authenticated: Boolean(accessToken && signedIn),
     signIn,
     signUp,
     signOut,
