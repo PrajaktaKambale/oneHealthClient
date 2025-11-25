@@ -48,13 +48,20 @@ const SignInForm = (props: SignInFormProps) => {
         const { identifier, password } = values
         setSubmitting(true)
 
-        const result = await signIn({ identifier, password })
+        try {
+            const result = await signIn({ identifier, password })
 
-        if (result?.status === 'failed') {
-            setMessage(result.message)
+            if (result?.status === 'failed') {
+                setMessage(result.message)
+                setSubmitting(false)
+            }
+            // If successful, navigation will happen automatically in useAuth hook
+            // Don't set submitting to false on success as the component will unmount
+        } catch (error) {
+            console.error('Login error:', error)
+            setMessage('An unexpected error occurred during login.')
+            setSubmitting(false)
         }
-
-        setSubmitting(false)
     }
 
     return (
