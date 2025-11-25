@@ -7,6 +7,7 @@ import type {
   ResetPassword,
   SignInResponse,
   SignUpResponse,
+    LogoutPayload,
 } from "@/@types/auth";
 
 export async function apiSignIn(data: SignInCredential) {
@@ -25,11 +26,12 @@ export async function apiSignUp(data: SignUpCredential) {
   });
 }
 
-export async function apiSignOut() {
-  return ApiService.fetchData({
-    url: "/sign-out",
-    method: "post",
-  });
+export async function apiSignOut(data: LogoutPayload) {
+    return ApiService.fetchData({
+        url: '/auth/logout',
+        method: 'post',
+        data,
+    })
 }
 
 export async function apiForgotPassword(data: ForgotPassword) {

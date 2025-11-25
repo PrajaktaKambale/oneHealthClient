@@ -255,6 +255,26 @@ const navigationConfig: NavigationTree[] = [
         authority: [],
         subMenu: [],
       },
+            {
+                key: 'visit.list',
+                path: '/clinic/visits',
+                title: 'Visit List',
+                translateKey: 'nav.visit.list',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: [],
+            },
+            {
+                key: 'visit.create',
+                path: '/clinic/visit/create',
+                title: 'Create Visit',
+                translateKey: 'nav.visit.create',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: [],
+            },
 
       //   {
       //     key: "clinics.create",

@@ -32,6 +32,13 @@ function useAuth() {
     (state) => state.auth.session
   );
 
+  // Debug authentication state
+  console.log('🔐 useAuth: Current auth state:', {
+    accessToken: accessToken ? `${accessToken.substring(0, 20)}...` : null,
+    signedIn,
+    authenticated: Boolean(accessToken && signedIn)
+  });
+
   // ---------------------------------------------------------
   // FETCH ROLE MENUS & MAP TO NAVIGATION CONFIG
   // ---------------------------------------------------------
@@ -195,12 +202,26 @@ function useAuth() {
     navigate(appConfig.unAuthenticatedEntryPath);
   };
 
-  const signOut = async () => {
-    await apiSignOut();
-    handleSignOut();
-  };
+    const signOut = async () => {
+        try {
+            // Call backend logout API with token
+            if (accessToken) {
+                await apiSignOut({
+                    allDevices: false,
+                    token: accessToken
+                })
+            }
+        } catch (error) {
+            // Continue with logout even if API call fails
+            console.error('Logout API error:', error)
+        } finally {
+            // Always clear local state regardless of API call result
+            handleSignOut()
+        }
+    }
 
   return {
+    authenticated: Boolean(accessToken && signedIn),
     authenticated: Boolean(accessToken && signedIn),
     signIn,
     signUp,
