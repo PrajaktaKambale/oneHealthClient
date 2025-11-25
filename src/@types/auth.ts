@@ -17,6 +17,7 @@ export type SignInResponse = {
                 roleId: string
                 roleName: string
                 roleCategory: string | null
+                priority?: number
             }>
             tenant: {
                 id: string

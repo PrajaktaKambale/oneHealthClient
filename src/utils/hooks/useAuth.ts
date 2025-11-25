@@ -73,50 +73,70 @@ function useAuth() {
     | undefined
   > => {
     try {
-      const resp = await apiSignIn(values);
-
-      if (resp.data && resp.data.success) {
-        const { accessToken, refreshToken, expiresIn, user } = resp.data.data;
-
-        // Store tokens
-        dispatch(signInSuccess({ accessToken, refreshToken, expiresIn }));
-
-        // Store user object
-        if (user) {
-          const authority = user.roles?.map((role) => role.roleName) || [];
-
-          dispatch(
-            setUser({
-              id: user.id,
-              username: user.username,
-              emailId: user.emailId,
-              fullName: user.fullName,
-              tenantId: user.tenantId,
-              clinicId: user.clinicId,
-              roles: user.roles,
-              authority,
-              tenant: user.tenant,
-              clinics: user.clinics,
-              avatar: "",
-            })
-          );
-
-          // Fetch role menus dynamically
-          const roleId = user.roles?.[0]?.roleId;
-          if (roleId) {
-            await fetchRoleMenus(roleId, user);
-          }
+        console.log('🔄 SignIn: Starting authentication...')
+        const resp = await apiSignIn(values)
+        console.log('📡 SignIn: API response received:', resp)
+        console.log('📡 SignIn: resp.data structure:', resp.data)
+        console.log('📡 SignIn: resp.data.data structure:', resp.data?.data)
+        
+        if (resp && resp.success && resp.data) {
+            const signInData = resp.data  // This is the SignInResponse
+            console.log('🔍 SignIn: signInData structure:', JSON.stringify(signInData, null, 2))
+            
+            // Try both access patterns to see which one works
+            const directAccess = (signInData as any)
+            const nestedAccess = (signInData as any).data
+            
+            console.log('🔍 Direct access - user exists:', !!directAccess.user)
+            console.log('🔍 Direct access - accessToken exists:', !!directAccess.accessToken)
+            console.log('🔍 Nested access - user exists:', !!nestedAccess?.user)
+            console.log('🔍 Nested access - accessToken exists:', !!nestedAccess?.accessToken)
+            
+            // Use the correct access pattern based on your API response
+            const { accessToken, refreshToken, expiresIn, user } = directAccess
+            console.log('✅ SignIn: Authentication successful, dispatching Redux actions...')
+            
+            dispatch(signInSuccess({ accessToken, refreshToken, expiresIn }))
+            
+            if (user) {
+                // Map roles to authority for backward compatibility
+                const authority = user.roles?.map((role: any) => role.roleName) || []
+                const userPayload = {
+                    id: user.id,
+                    username: user.username,
+                    emailId: user.emailId,
+                    fullName: user.fullName,
+                    tenantId: user.tenantId,
+                    clinicId: user.clinicId,
+                    roles: user.roles,
+                    authority: authority,
+                    tenant: user.tenant,
+                    clinics: user.clinics,
+                    avatar: '', // Default empty avatar
+                }
+                console.log('👤 SignIn: Setting user data:', userPayload)
+                dispatch(setUser(userPayload))
+            }
+            
+            const redirectUrl = query.get(REDIRECT_URL_KEY)
+            const targetPath = redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
+            console.log('🚀 SignIn: Navigating to:', targetPath)
+            
+            navigate(targetPath)
+            
+            console.log('✅ SignIn: Process completed successfully')
+            return {
+                status: 'success',
+                message: '',
+            }
+        } else {
+            console.log('❌ SignIn: API response indicates failure:', resp)
+            return {
+                status: 'failed',
+                message: resp?.message || 'Authentication failed',
+            }
         }
-
-        // Redirect
-        const redirectUrl = query.get(REDIRECT_URL_KEY);
-        navigate(redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath);
-
-        return {
-          status: "success",
-          message: "",
-        };
-      }
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     } catch (errors: any) {
       return {
         status: "failed",
