@@ -108,7 +108,37 @@ const navigationConfig: NavigationTree[] = [
             type: NAV_ITEM_TYPE_ITEM,
             authority: [],
             subMenu: [],
-        }
+      },
+      {
+        key: 'dashboard.pet',
+        path: '/dashboard/pet-health',
+        title: 'Pet Health',
+        translateKey: 'nav.dashboard.pet',
+        icon: '',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+      },
+      {
+        key: 'dashboard.livestock',
+        path: '/dashboard/livestock',
+        title: 'Livestock',
+        translateKey: 'nav.dashboard.livestock',
+        icon: '',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+      },
+      {
+        key: 'dashboard.onehealth',
+        path: '/dashboard/onehealth-hub',
+        title: 'OneHealth Hub',
+        translateKey: 'nav.dashboard.onehealth',
+        icon: '',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+      }
     ],
   },
 
