@@ -212,6 +212,24 @@ export const protectedRoutes: Routes = [
     authority: [],
   },
   {
+    key: "dashboard.pet",
+    path: "/dashboard/pet-health",
+    component: lazy(() => import("@/views/dashboard/PetHealth")),
+    authority: [],
+  },
+  {
+    key: "dashboard.livestock",
+    path: "/dashboard/livestock",
+    component: lazy(() => import("@/views/dashboard/Livestock")),
+    authority: [],
+  },
+  {
+    key: "dashboard.onehealth",
+    path: "/dashboard/onehealth-hub",
+    component: lazy(() => import("@/views/dashboard/OneHealthHub")),
+    authority: [],
+  },
+  {
     key: "analytics.statistics",
     path: "/analytics/statistics",
     component: lazy(() => import("@/views/analytics/SystemStatistics")),
