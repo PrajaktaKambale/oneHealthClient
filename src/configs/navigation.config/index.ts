@@ -92,13 +92,24 @@ import type { NavigationTree } from "@/@types/navigation";
 const navigationConfig: NavigationTree[] = [
   {
     key: "dashboard",
-    path: "/dashboard",
+    path: "",
     title: "Dashboard",
     translateKey: "nav.dashboard",
     icon: "dashboard",
-    type: NAV_ITEM_TYPE_ITEM,
-    authority: ["SUPER_ADMIN"],
-    subMenu: [],
+    type: NAV_ITEM_TYPE_COLLAPSE,
+    authority: [],
+    subMenu: [
+        {
+            key: 'dashboard.human',
+            path: '/dashboard/human-health',
+            title: 'Human Health',
+            translateKey: 'nav.dashboard.human',
+            icon: '',
+            type: NAV_ITEM_TYPE_ITEM,
+            authority: [],
+            subMenu: [],
+        }
+    ],
   },
 
   // -------------------------

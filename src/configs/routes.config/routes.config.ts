@@ -91,12 +91,12 @@ import type { Routes } from "@/@types/routes";
 export const publicRoutes: Routes = [...authRoute];
 
 export const protectedRoutes: Routes = [
-  {
-    key: "home",
-    path: "/home",
-    component: lazy(() => import("@/views/Home")),
-    authority: [],
-  },
+  // {
+  //   key: "home",
+  //   path: "/home",
+  //   component: lazy(() => import("@/views/Home")),
+  //   authority: [],
+  // },
 
   // -------------------------
   // TENANTS MANAGEMENT
@@ -205,6 +205,12 @@ export const protectedRoutes: Routes = [
   // -------------------------
   // ANALYTICS / REPORTS
   // -------------------------
+  {
+    key: "dashboard",
+    path: "/dashboard/human-health",
+    component: lazy(() => import("@/views/dashboard/Dashboard")),
+    authority: [],
+  },
   {
     key: "analytics.statistics",
     path: "/analytics/statistics",
